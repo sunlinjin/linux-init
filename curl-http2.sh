@@ -11,9 +11,14 @@
 # curl --http2 -I https://nghttp2.org/
 # curl --version
 
+# https://curl.haxx.se/download/
+CURL_VER="curl-7.56.1"
+
 sudo apt install git g++ make binutils autoconf automake autotools-dev libtool pkg-config -y
 sudo apt install zlib1g-dev libcunit1-dev libssl-dev libxml2-dev libev-dev libevent-dev libjansson-dev -y
 sudo apt install libjemalloc-dev cython python3-dev python-setuptools -y
+
+cd ~/Downloads
 
 git clone https://github.com/tatsuhiro-t/nghttp2.git
 cd nghttp2
@@ -24,18 +29,32 @@ autoconf
 make
 sudo make install
 
-# cd ~
+cd ~/Downloads
+
 # sudo apt build-dep curl
 
-wget https://curl.haxx.se/download/curl-7.56.0.tar.bz2
-tar -xvjf curl-7.56.0.tar.bz2
-cd curl-7.56.0
-./configure --with-nghttp2=/usr/local --with-ssl
-sudo make
-sudo make install
+wget https://curl.haxx.se/download/${CURL_VER}.tar.bz2
+if [ -f "${CURL_VER}.tar.bz2" ]
+then
+	tar -xvjf ${CURL_VER}.tar.bz2
+	cd ${CURL_VER}
+	./configure --with-nghttp2=/usr/local --with-ssl
+	sudo make
+	sudo make install
+fi
 
-su root
-echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
-ldconfig
+cd ~
 
-curl --version | grep http
+su
+
+if [ -f "/etc/ld.so.conf.d/local.conf" ]
+then
+	CONTENT=`cat /etc/ld.so.conf.d/local.conf | grep -c /usr/local/lib`
+	if [ ${CONTENT} -eq 1 ]
+	then
+		echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
+		ldconfig
+	fi
+fi
+
+curl -I https://nghttp2.org/
