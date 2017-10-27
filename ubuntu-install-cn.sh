@@ -61,6 +61,10 @@ sudo pip3 install pyinotify
 
 git clone https://github.com/Yufeikang/bcloud
 cd bcloud && sudo python3 setup.py install
+
+# uninstall
+# sudo python3 setup.py install --record install.txt
+# cat install.txt | xargs sudo rm -rf
 cd ..
 
 # -------------------------------------------------------------------------------------------
